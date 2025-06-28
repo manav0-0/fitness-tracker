@@ -65,14 +65,27 @@
                 <div class="section-header">
                     <h2>Progress Analytics</h2>
                 </div>
+                <!-- MODIFICATION: Enhanced analytics link card structure -->
                 <a href="progress-analytics.html" class="analytics-link-card glass-card">
-                    <div class="analytics-link-text">
-                        <h3>View Your Progress</h3>
+                    <div class="analytics-link-content">
+                        <div class="analytics-link-header">
+                            <svg class="analytics-icon"><use xlink:href="#icon-calendar"></use></svg>
+                            <h3>View Your Progress</h3>
+                        </div>
                         <p>Track your PRs, workout volume, and history.</p>
+                        <div class="analytics-stats-preview">
+                            <div class="stat-item">
+                                <span class="stat-value" id="stats-total-workouts">--</span>
+                                <span class="stat-label">Workouts</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value" id="stats-last-workout">--</span>
+                                <span class="stat-label">Last Session</span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="analytics-link-icon-container">
-                        <svg class="analytics-icon"><use xlink:href="#icon-calendar"></use></svg>
-                        <span class="chevron-arrow">→</span>
+                    <div class="analytics-link-arrow">
+                        <span>→</span>
                     </div>
                 </a>
             </div>
@@ -477,6 +490,22 @@
         }
     }
 
+    // MODIFICATION: Function to update the analytics card
+    function updateAnalyticsCard() {
+        const totalWorkoutsEl = document.getElementById('stats-total-workouts');
+        const lastWorkoutEl = document.getElementById('stats-last-workout');
+
+        if (userHistory.length > 0) {
+            totalWorkoutsEl.textContent = userHistory.length;
+            const lastWorkout = userHistory[0];
+            const lastDate = new Date(lastWorkout.date);
+            lastWorkoutEl.textContent = lastDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        } else {
+            totalWorkoutsEl.textContent = '0';
+            lastWorkoutEl.textContent = 'N/A';
+        }
+    }
+
     async function initAppForUser() {
         if (!currentUser) return;
         const userDoc = await db.collection('users').doc(currentUser.uid).get();
@@ -490,6 +519,7 @@
 
         await getFullHistory();
         setupTodaysWorkout();
+        updateAnalyticsCard(); // Call the new function here
         const pickerList = document.getElementById('workout-picker-list');
         const pickerOverlay = document.getElementById('workout-picker-overlay');
         pickerList.innerHTML = '';
