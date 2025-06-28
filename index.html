@@ -65,7 +65,6 @@
                 <div class="section-header">
                     <h2>Progress Analytics</h2>
                 </div>
-                <!-- MODIFICATION: Enhanced analytics link card structure -->
                 <a href="progress-analytics.html" class="analytics-link-card glass-card">
                     <div class="analytics-link-content">
                         <div class="analytics-link-header">
@@ -73,7 +72,8 @@
                             <h3>View Your Progress</h3>
                         </div>
                         <p>Track your PRs, workout volume, and history.</p>
-                        <div class="analytics-stats-preview">
+                        <!-- MODIFICATION: Add loading-stats class to initially hide this div -->
+                        <div class="analytics-stats-preview loading-stats">
                             <div class="stat-item">
                                 <span class="stat-value" id="stats-total-workouts">--</span>
                                 <span class="stat-label">Workouts</span>
@@ -346,11 +346,7 @@
                                 let prevPerformanceText = "";
                                 const prevSet = lastPerformance?.sets?.[i];
 
-                                // MODIFICATION: More robust check for previous set data.
-                                // This will now correctly display "Last: ..." even if reps were "Unknown".
                                 if (prevSet) {
-                                    // We know weight exists because of the filter in finishWorkout.
-                                    // Handle old data where reps might be missing, null, or an empty string.
                                     const repsText = prevSet.reps || "Unknown";
                                     prevPerformanceText = ` | Last: ${prevSet.weight}lbs for ${repsText} reps`;
                                 }
@@ -490,10 +486,11 @@
         }
     }
 
-    // MODIFICATION: Function to update the analytics card
+    // MODIFICATION: Updated function to handle the loading state
     function updateAnalyticsCard() {
         const totalWorkoutsEl = document.getElementById('stats-total-workouts');
         const lastWorkoutEl = document.getElementById('stats-last-workout');
+        const statsPreviewEl = document.querySelector('.analytics-stats-preview');
 
         if (userHistory.length > 0) {
             totalWorkoutsEl.textContent = userHistory.length;
@@ -504,6 +501,9 @@
             totalWorkoutsEl.textContent = '0';
             lastWorkoutEl.textContent = 'N/A';
         }
+        
+        // Remove the loading class to fade in the content
+        statsPreviewEl.classList.remove('loading-stats');
     }
 
     async function initAppForUser() {
@@ -519,7 +519,7 @@
 
         await getFullHistory();
         setupTodaysWorkout();
-        updateAnalyticsCard(); // Call the new function here
+        updateAnalyticsCard();
         const pickerList = document.getElementById('workout-picker-list');
         const pickerOverlay = document.getElementById('workout-picker-overlay');
         pickerList.innerHTML = '';
