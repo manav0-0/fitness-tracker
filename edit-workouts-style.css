@@ -84,7 +84,7 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-t
     fill: none;
 }
 #import-workouts-btn svg {
-    stroke: var(--text-primary);
+    color: var(--text-primary);
 }
 #add-workout-btn {
     padding: 10px 15px;
@@ -97,7 +97,7 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-t
 .edit-btn svg {
     width: 20px;
     height: 20px;
-    fill: var(--system-yellow);
+    color: var(--system-yellow);
 }
 
 .schedule-item, .workout-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; margin-bottom: 10px; }
