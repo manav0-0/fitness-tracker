@@ -38,7 +38,7 @@
 
 html {
     font-size: 16px;
-    background-color: var(--background-color); /* Set overscroll color */
+    background-color: var(--background-color);
 }
 body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -49,23 +49,21 @@ body {
     background-size: 400% 400%;
     animation: gradient-animation 25s ease infinite;
     background-attachment: fixed;
-    min-height: 100vh; /* Ensure body is at least screen height */
-    display: flex; /* Make body a flex container */
-    flex-direction: column; /* Stack children vertically */
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
-/* --- MODIFICATION FOR IOS SAFE AREA --- */
 .container {
     max-width: 800px;
     margin: 0 auto;
     padding-left: 15px;
     padding-right: 15px;
     padding-bottom: 100px;
-    /* This adds padding to the top equal to the height of the status bar/notch */
     padding-top: calc(15px + env(safe-area-inset-top));
-    width: 100%; /* Ensure container takes up full width within flex context */
-    box-sizing: border-box; /* Include padding in width calculation */
-    flex-grow: 1; /* Allow container to grow to fill available space */
+    width: 100%;
+    box-sizing: border-box;
+    flex-grow: 1;
 }
 
 header { text-align: center; margin-bottom: 10px; }
@@ -73,17 +71,60 @@ h1 { font-size: 2rem; font-weight: 700; margin-bottom: 0; }
 h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-top: 20px; margin-bottom: 10px; }
 .glass-card { background: var(--glass-bg); -webkit-backdrop-filter: blur(20px) saturate(180%); backdrop-filter: blur(20px) saturate(180%); border: 1px solid var(--glass-border); border-radius: 20px; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3); }
 
-#todays-workout-card { display: block; width: 100%; text-align: left; padding: 20px; border-radius: 20px; cursor: pointer; margin-bottom: 20px; box-sizing: border-box; transition: transform 0.1s ease-out; border: 1px solid var(--system-blue); }
+/* MODIFICATION: Styles for user profile dropdown */
+#auth-container { position: relative; }
+#user-photo { cursor: pointer; }
+#user-dropdown {
+    position: absolute;
+    top: 50px;
+    right: 0;
+    background: var(--glass-bg);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid var(--glass-border);
+    border-radius: 14px;
+    padding: 8px;
+    z-index: 100;
+    width: 150px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px) scale(0.95);
+    transition: all 0.2s ease-out;
+}
+#user-dropdown.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1);
+}
+#sign-out-btn {
+    width: 100%;
+    margin-top: 0;
+    padding: 10px 15px;
+    font-size: 1rem;
+}
+
+/* MODIFICATION: Styles for streamlined workout start flow */
+#todays-workout-card { display: block; width: 100%; text-align: left; padding: 20px; border-radius: 20px; cursor: pointer; margin-bottom: 10px; box-sizing: border-box; transition: transform 0.1s ease-out; border: 1px solid var(--system-blue); }
 #todays-workout-card:active { transform: scale(0.98); }
 #todays-workout-card .day-of-week { font-size: 0.9rem; font-weight: 600; color: var(--system-blue); text-transform: uppercase; }
 #todays-workout-card .workout-name { font-size: 1.5rem; font-weight: 700; color: var(--text-primary); margin: 5px 0; }
 #todays-workout-card.rest-day { border-color: var(--text-tertiary); cursor: default; }
 #todays-workout-card.rest-day .day-of-week { color: var(--text-tertiary); }
-
-#workout-select-btn { display: flex; justify-content: space-between; align-items: center; width: 100%; text-align: left; padding: 16px 20px; border-radius: 14px; cursor: pointer; font-size: 1.1rem; font-weight: 600; box-sizing: border-box; }
-#workout-select-text { color: var(--text-primary); }
-#workout-select-btn .chevron { width: 16px; height: 16px; fill: var(--text-secondary); transition: transform 0.3s; }
-.dropdown-overlay.active + #workout-select-btn .chevron { transform: rotate(180deg); }
+#choose-different-workout-btn {
+    display: block;
+    width: 100%;
+    text-align: center;
+    padding: 12px 20px;
+    border-radius: 14px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    box-sizing: border-box;
+    margin-bottom: 20px;
+    color: var(--text-secondary);
+    background: rgba(255,255,255,0.05);
+    border: none;
+}
 
 .icon-btn { background: transparent; border: none; padding: 8px; cursor: pointer; transition: transform 0.1s ease-out, background-color 0.2s; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
 .icon-btn:active { transform: scale(0.9); }
@@ -94,9 +135,8 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-t
 .action-btn:active { transform: scale(0.98); }
 .destructive-btn { background-color: var(--system-red); color: var(--text-on-action); }
 
-#workout-select-btn, #edit-workouts-link { transition: transform 0.1s ease-out, background-color 0.2s; }
-#workout-select-btn:hover, #edit-workouts-link:hover { background-color: rgba(50, 50, 50, 0.7); }
-#workout-select-btn:active, #edit-workouts-link:active { transform: scale(0.98); background-color: rgba(70, 70, 70, 0.8); }
+#edit-workouts-link:hover { background-color: rgba(50, 50, 50, 0.7); }
+#edit-workouts-link:active { transform: scale(0.98); background-color: rgba(70, 70, 70, 0.8); }
 
 #workout-area.fading { opacity: 0; transition: opacity 0.15s; }
 .exercise { margin-bottom: 20px; padding: 15px; animation: fade-in 0.5s; }
@@ -161,19 +201,20 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-t
 .action-btn.loading .loader { display: block; }
 .action-btn.loading .btn-text { visibility: hidden; }
 
-/* New styles for the analytics link card */
+/* MODIFICATION: Enhanced analytics link card */
 .section-header { display: flex; justify-content: space-between; align-items: center; }
-.analytics-link-card { display: flex; justify-content: space-between; align-items: center; padding: 20px; text-decoration: none; color: var(--text-primary); transition: transform 0.2s, background-color 0.2s; margin-top: 10px; }
+.analytics-link-card { display: flex; justify-content: space-between; align-items: flex-start; padding: 20px; text-decoration: none; color: var(--text-primary); transition: transform 0.2s, background-color 0.2s; margin-top: 10px; }
 .analytics-link-card:hover { background-color: rgba(255,255,255,0.1); }
 .analytics-link-card:active { transform: scale(0.98); }
 .analytics-link-text { flex-grow: 1; }
-.analytics-link-card h3 { margin: 0 0 5px 0; font-size: 1.2rem; }
-.analytics-link-card p { margin: 0; color: var(--text-secondary); }
-.analytics-link-icon-container { display: flex; align-items: center; gap: 15px; }
+.analytics-link-card h3 { margin: 0 0 8px 0; font-size: 1.2rem; }
+.analytics-link-card p { margin: 0; color: var(--text-secondary); font-size: 0.9rem; }
+.analytics-link-stats { margin-top: 15px; font-size: 0.9rem; color: var(--text-secondary); }
+.analytics-link-stats span { color: var(--text-primary); font-weight: 600; }
+.analytics-link-icon-container { display: flex; align-items: center; gap: 15px; padding-top: 4px; }
 .analytics-icon { width: 32px; height: 32px; stroke: var(--text-secondary); }
 .analytics-link-card .chevron-arrow { font-size: 2rem; color: var(--text-tertiary); }
 
-/* Workout Complete Modal Animation */
 #workout-complete-overlay.active #completion-icon {
     animation: icon-pop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.2s 1 forwards;
     transform: scale(0.7);
