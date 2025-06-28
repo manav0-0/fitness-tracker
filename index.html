@@ -8,7 +8,6 @@
     <meta name="apple-mobile-web-app-title" content="Fitness Tracker">
     <title>Fitness Tracker</title>
     <link rel="stylesheet" href="style.css">
-    <!-- PWA MODIFICATION: Link to manifest and set theme color -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0a2a4e">
     <link rel="icon" href="images/eagle.png" type="image/png">
@@ -23,7 +22,6 @@
         <symbol id="icon-calendar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0h18" />
         </symbol>
-        <!-- Timer Icons -->
         <symbol id="icon-play" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></symbol>
         <symbol id="icon-skip" viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></symbol>
         <symbol id="icon-expand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></symbol>
@@ -37,30 +35,31 @@
             <div class="title-container">
                 <h1>Fitness Tracker</h1>
             </div>
+            <!-- MODIFICATION: Refined header with user dropdown -->
             <div id="auth-container" style="margin-top: 20px;">
                 <button id="sign-in-btn" class="action-btn" style="background-color: var(--system-blue); color: var(--text-on-action);">Sign In with Google</button>
-                <div id="user-info" style="display: none; align-items: center; justify-content: center; gap: 15px;">
-                    <img id="user-photo" style="width: 40px; height: 40px; border-radius: 50%;">
+                <div id="user-info" style="display: none; align-items: center; justify-content: center; gap: 15px; position: relative;">
                     <span id="user-name"></span>
-                    <button id="sign-out-btn" class="action-btn destructive-btn" style="width: auto; padding: 10px 15px;">Sign Out</button>
+                    <img id="user-photo" style="width: 40px; height: 40px; border-radius: 50%; cursor: pointer;">
+                    <div id="user-dropdown" class="glass-card">
+                        <button id="sign-out-btn" class="action-btn destructive-btn">Sign Out</button>
+                    </div>
                 </div>
             </div>
         </header>
         
         <div id="app-content" style="display: none;">
             <div id="todays-workout-area"></div>
+            <!-- MODIFICATION: Simplified start workout flow -->
+            <button id="choose-different-workout-btn">Choose a Different Workout</button>
 
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                 <h2>All Workouts</h2>
                 <a href="edit-workouts.html" id="edit-workouts-link" class="action-btn" style="width: auto; padding: 8px 16px; margin-top: 0; background-color: rgba(45, 45, 45, 0.9); color: var(--text-primary);">Manage Plan</a>
             </div>
-            <button id="workout-select-btn" class="glass-card">
-                <span id="workout-select-text">Select a Specific Workout</span>
-                <svg class="chevron"><use xlink:href="#icon-chevron-down"></use></svg>
-            </button>
-
             <div id="workout-area"></div>
             
+            <!-- MODIFICATION: Enhanced analytics link card -->
             <div id="history-area" style="margin-top: 30px;">
                 <div class="section-header">
                     <h2>Progress Analytics</h2>
@@ -69,6 +68,10 @@
                     <div class="analytics-link-text">
                         <h3>View Your Progress</h3>
                         <p>Track your PRs, workout volume, and history.</p>
+                        <div class="analytics-link-stats">
+                            <div id="stats-total-workouts">Workouts: <span>--</span></div>
+                            <div id="stats-recent-pr">Recent PR: <span>--</span></div>
+                        </div>
                     </div>
                     <div class="analytics-link-icon-container">
                         <svg class="analytics-icon"><use xlink:href="#icon-calendar"></use></svg>
@@ -312,10 +315,11 @@
         }
         currentWorkoutName = workoutName;
         const workout = workouts[workoutName];
-        document.getElementById('workout-select-text').textContent = workoutName;
+        // document.getElementById('workout-select-text').textContent = workoutName;
         workoutArea.classList.add('fading');
         setTimeout(() => {
             workoutArea.innerHTML = `<div class="glass-card" style="padding: 20px; animation: fade-in 0.5s;">
+                <h2 style="margin-top: 0; text-align: center;">${workoutName}</h2>
                 ${workout.map((exercise, exIndex) => {
                     const lastPerformance = findLastExercisePerformance(exercise.name, userHistory);
                     const restInSeconds = parseRestTime(exercise.rest);
@@ -333,11 +337,7 @@
                                 let prevPerformanceText = "";
                                 const prevSet = lastPerformance?.sets?.[i];
 
-                                // MODIFICATION: More robust check for previous set data.
-                                // This will now correctly display "Last: ..." even if reps were "Unknown".
                                 if (prevSet) {
-                                    // We know weight exists because of the filter in finishWorkout.
-                                    // Handle old data where reps might be missing, null, or an empty string.
                                     const repsText = prevSet.reps || "Unknown";
                                     prevPerformanceText = ` | Last: ${prevSet.weight}lbs for ${repsText} reps`;
                                 }
@@ -381,7 +381,7 @@
         if (confirm("Are you sure you want to cancel this workout?")) {
             workoutArea.innerHTML = '';
             currentWorkoutName = null;
-            document.getElementById('workout-select-text').textContent = 'Select a Specific Workout';
+            // document.getElementById('workout-select-text').textContent = 'Select a Specific Workout';
             timerBar.classList.remove('active');
             dismissTimer();
             showToast('Workout cancelled.');
@@ -422,7 +422,7 @@
 
         workoutArea.innerHTML = '';
         currentWorkoutName = null;
-        document.getElementById('workout-select-text').textContent = 'Select a Specific Workout';
+        // document.getElementById('workout-select-text').textContent = 'Select a Specific Workout';
         timerBar.classList.remove('active');
         dismissTimer();
     }
@@ -477,6 +477,51 @@
         }
     }
 
+    // MODIFICATION: Function to calculate PR for analytics card
+    function calculateRecentPR(history) {
+        let bestSet = null;
+        let prDate = null;
+        let max1RM = 0;
+        let exerciseName = '';
+
+        history.forEach(workout => {
+            workout.exercises.forEach(exercise => {
+                exercise.sets.forEach(set => {
+                    const w = parseFloat(set.weight);
+                    const r = parseInt(set.reps, 10);
+                    if (!w || !r) return;
+                    const estimated1RM = w * (1 + r / 30);
+                    if (estimated1RM > max1RM) {
+                        max1RM = estimated1RM;
+                        bestSet = set;
+                        prDate = workout.date;
+                        exerciseName = exercise.name;
+                    }
+                });
+            });
+        });
+        return bestSet ? { ...bestSet, date: prDate, name: exerciseName } : null;
+    }
+
+    // MODIFICATION: Function to update the analytics card
+    function updateAnalyticsCard() {
+        const totalWorkoutsEl = document.querySelector('#stats-total-workouts span');
+        const recentPrEl = document.querySelector('#stats-recent-pr span');
+
+        if (userHistory.length > 0) {
+            totalWorkoutsEl.textContent = userHistory.length;
+            const recentPR = calculateRecentPR(userHistory);
+            if (recentPR) {
+                recentPrEl.textContent = `${recentPR.name} - ${recentPR.weight}lbs x ${recentPR.reps} reps`;
+            } else {
+                recentPrEl.textContent = 'No records yet.';
+            }
+        } else {
+            totalWorkoutsEl.textContent = '0';
+            recentPrEl.textContent = 'No records yet.';
+        }
+    }
+
     async function initAppForUser() {
         if (!currentUser) return;
         const userDoc = await db.collection('users').doc(currentUser.uid).get();
@@ -490,6 +535,8 @@
 
         await getFullHistory();
         setupTodaysWorkout();
+        updateAnalyticsCard(); // Update the analytics card with fresh data
+
         const pickerList = document.getElementById('workout-picker-list');
         const pickerOverlay = document.getElementById('workout-picker-overlay');
         pickerList.innerHTML = '';
@@ -530,13 +577,22 @@
         }
     });
 
-    document.getElementById('workout-select-btn').addEventListener('click', (e) => {
+    // MODIFICATION: Event listener for new workout picker button
+    document.getElementById('choose-different-workout-btn').addEventListener('click', (e) => {
         e.stopPropagation();
         toggleDropdown(e.currentTarget, document.getElementById('workout-picker-overlay'));
     });
+
+    // MODIFICATION: Event listener for user profile dropdown
+    document.getElementById('user-photo').addEventListener('click', (e) => {
+        e.stopPropagation();
+        document.getElementById('user-dropdown').classList.toggle('active');
+    });
+
     document.addEventListener('click', () => {
-        const activeDropdown = document.querySelector('.dropdown-overlay.active');
-        if (activeDropdown) activeDropdown.classList.remove('active');
+        document.querySelectorAll('.dropdown-overlay.active, #user-dropdown.active').forEach(el => {
+            el.classList.remove('active');
+        });
     });
 
     document.getElementById('welcome-dismiss-btn').addEventListener('click', () => {
@@ -561,7 +617,6 @@
     });
 
     </script>
-    <!-- PWA MODIFICATION: Register the service worker -->
     <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
