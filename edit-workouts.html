@@ -20,7 +20,6 @@
             <path d="M9.5 9.5L14.5 14.5" stroke-width="1.5" stroke-linecap="sharp"/>
         </symbol>
         
-        <!-- MODIFICATION: New Heroicons -->
         <symbol id="icon-file-import" viewBox="0 0 24 24" fill="currentColor">
             <path fill-rule="evenodd" d="M5.625 1.5H9a3.75 3.75 0 0 1 3.75 3.75v1.875c0 1.036.84 1.875 1.875 1.875H16.5a3.75 3.75 0 0 1 3.75 3.75v7.875c0 1.035-.84 1.875-1.875 1.875H5.625a1.875 1.875 0 0 1-1.875-1.875V3.375c0-1.036.84-1.875 1.875-1.875Zm5.845 17.03a.75.75 0 0 0 1.06 0l3-3a.75.75 0 1 0-1.06-1.06l-1.72 1.72V12a.75.75 0 0 0-1.5 0v4.19l-1.72-1.72a.75.75 0 0 0-1.06 1.06l3 3Z" clip-rule="evenodd" />
             <path d="M14.25 5.25a5.23 5.23 0 0 0-1.279-3.434 9.768 9.768 0 0 1 6.963 6.963A5.23 5.23 0 0 0 16.5 7.5h-1.875a.375.375 0 0 1-.375-.375V5.25Z" />
@@ -48,31 +47,11 @@
         </header>
 
         <div id="app-content" style="display: none;">
-            <div id="ai-section" class="glass-card">
-                <div id="ai-section-header">
-                    <h2>Transcribe Workout With AI</h2>
-                    <img src="images/Rosecurve.png" id="ai-section-icon" alt="AI Icon">
-                </div>
-                <div id="ai-section-content">
-                    <p style="color: var(--text-secondary); font-size: 0.9rem;">Get a free Google Gemini API key and upload a file containing a <b>single workout day</b>. The AI will automatically create a new plan for you.</p>
-                    <div class="editor-form-group">
-                        <label for="gemini-api-key">Google Gemini API Key (<a href="https://aistudio.google.com/app/apikey" target="_blank" style="color: var(--system-blue);">Get one here</a>)</label>
-                        <input type="password" id="gemini-api-key" placeholder="Enter your API key">
-                    </div>
-                    <div class="editor-form-group">
-                        <label for="ai-plan-name">New Plan Name</label>
-                        <input type="text" id="ai-plan-name" placeholder="e.g., My Hypertrophy Push Day">
-                    </div>
-                    <div class="editor-form-group">
-                        <label for="ai-file-input">Workout File</label>
-                        <input type="file" id="ai-file-input" accept=".pdf,.txt,.csv,.md">
-                    </div>
-                    <button id="transcribe-btn" class="action-btn" style="width: 100%; background-color: var(--system-blue); color: var(--text-on-action);">
-                        <span class="btn-text">Transcribe</span>
-                        <div class="loader"></div>
-                    </button>
-                </div>
-            </div>
+            <!-- MODIFICATION: AI section is now a button that opens a modal -->
+            <button id="open-ai-modal-btn" class="glass-card">
+                <img src="images/Rosecurve.png" id="ai-section-icon" alt="AI Icon">
+                <span>Create Plan with AI ✨</span>
+            </button>
 
             <div id="schedule-section">
                 <h2>Weekly Schedule</h2>
@@ -100,6 +79,37 @@
             <h2>Please Sign In</h2>
             <p>You need to be signed in to manage your workout plan.</p>
             <a href="index.html" class="action-btn" style="background-color: var(--system-blue); color: var(--text-on-action);">Go to Sign In Page</a>
+        </div>
+    </div>
+
+    <!-- MODIFICATION: AI Transcriber Modal -->
+    <div class="modal-overlay" id="ai-modal-overlay">
+        <div class="overlay-content glass-card">
+            <div class="overlay-header">
+                <h2>Transcribe Workout With AI</h2>
+                <button class="icon-btn" id="close-ai-modal-btn"><svg><use xlink:href="#icon-close"></use></svg></button>
+            </div>
+            <div class="overlay-body">
+                <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0;">Get a free Google Gemini API key and upload a file containing a <b>single workout day</b>. The AI will automatically create a new plan for you.</p>
+                <div class="editor-form-group">
+                    <label for="gemini-api-key">Google Gemini API Key (<a href="https://aistudio.google.com/app/apikey" target="_blank" style="color: var(--system-blue);">Get one here</a>)</label>
+                    <input type="password" id="gemini-api-key" placeholder="Enter your API key">
+                </div>
+                <div class="editor-form-group">
+                    <label for="ai-plan-name">New Plan Name</label>
+                    <input type="text" id="ai-plan-name" placeholder="e.g., My Hypertrophy Push Day">
+                </div>
+                <div class="editor-form-group">
+                    <label for="ai-file-input">Workout File</label>
+                    <input type="file" id="ai-file-input" accept=".pdf,.txt,.csv,.md">
+                </div>
+            </div>
+            <div class="overlay-footer" style="grid-template-columns: 1fr;">
+                <button id="transcribe-btn" class="action-btn" style="width: 100%; background-color: var(--system-blue); color: var(--text-on-action);">
+                    <span class="btn-text">Transcribe</span>
+                    <div class="loader"></div>
+                </button>
+            </div>
         </div>
     </div>
 
@@ -145,6 +155,8 @@
 
     const editorOverlay = document.getElementById('editor-overlay');
     const editorExercisesList = document.getElementById('editor-exercises-list');
+    // MODIFICATION: AI Modal elements
+    const aiModalOverlay = document.getElementById('ai-modal-overlay');
     let editingWorkoutName = '';
 
     function showToast(message, type = 'info', duration = 3000) {
@@ -329,7 +341,10 @@
     });
 
     document.getElementById('close-editor-btn').addEventListener('click', closeEditor);
-    document.getElementById('ai-section-header').addEventListener('click', () => document.getElementById('ai-section').classList.toggle('expanded'));
+    
+    // MODIFICATION: Event listeners for AI Modal
+    document.getElementById('open-ai-modal-btn').addEventListener('click', () => aiModalOverlay.classList.add('active'));
+    document.getElementById('close-ai-modal-btn').addEventListener('click', () => aiModalOverlay.classList.remove('active'));
     document.getElementById('transcribe-btn').addEventListener('click', async () => { /* ... existing AI code ... */ });
     
     function exportSingleWorkout(name) {
