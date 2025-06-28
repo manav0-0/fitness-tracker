@@ -30,21 +30,32 @@
                 <div class="stat-card glass-card"><div id="total-sets" class="stat-value">0</div><div class="stat-label">Sets Done</div></div>
             </div>
 
+            <!-- MODIFICATION: Charts are now a self-contained component -->
             <h2 style="margin-top: 40px;">Progress Charts</h2>
             <div class="glass-card" style="padding: 20px; margin-bottom: 20px;">
-                <label for="chart-metric-select" style="display: block; margin-bottom: 10px; color: var(--text-secondary);">Select Metric:</label>
-                <select id="chart-metric-select" style="width: 100%; padding: 12px; background-color: rgba(0,0,0,0.2); border: 1px solid var(--glass-border); color: var(--text-primary); border-radius: 8px; font-size: 1rem; box-sizing: border-box; margin-bottom: 20px;">
-                    <option value="volume">Total Volume Over Time</option>
-                    <option value="1rm">Est. 1RM Over Time</option>
-                </select>
+                <div class="chart-controls">
+                    <div>
+                        <label for="chart-metric-select">Select Metric:</label>
+                        <select id="chart-metric-select">
+                            <option value="volume">Total Volume Over Time</option>
+                            <option value="1rm">Est. 1RM Over Time</option>
+                        </select>
+                    </div>
+                    <div id="chart-exercise-select-container" style="display: none;">
+                        <label for="chart-exercise-select">Select Exercise:</label>
+                        <select id="chart-exercise-select">
+                            <option value="">-- Choose an exercise --</option>
+                        </select>
+                    </div>
+                </div>
                 <canvas id="progress-chart"></canvas>
             </div>
 
             <h2 style="margin-top: 40px;">Personal Record Finder</h2>
             <div id="pr-finder" class="glass-card">
                 <div class="pr-finder-form">
-                    <label for="exercise-select">Select an Exercise:</label>
-                    <select id="exercise-select">
+                    <label for="pr-exercise-select">Select an Exercise:</label>
+                    <select id="pr-exercise-select">
                         <option value="">-- Choose an exercise --</option>
                     </select>
                 </div>
@@ -104,7 +115,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
 
     <script>
-    // --- All variables and functions from the previous correct answer remain here ---
     const firebaseConfig = {
       apiKey: "AIzaSyDe-YVkiX81ISLhVfRdC0srkkHi2JQQeSs",
       authDomain: "my-fitness-tracker-797e5.firebaseapp.com",
@@ -123,7 +133,8 @@
     let progressChart = null;
     let calendarDate = new Date();
 
-    const exerciseSelect = document.getElementById('exercise-select');
+    // MODIFICATION: Renamed exerciseSelect to prExerciseSelect for clarity
+    const prExerciseSelect = document.getElementById('pr-exercise-select');
     const resultArea = document.getElementById('pr-result-area');
     const historyCarousel = document.getElementById('history-carousel');
     const modalOverlay = document.getElementById('history-detail-overlay');
@@ -134,6 +145,10 @@
     const chooseDateBtn = document.getElementById('choose-date-btn');
     const calendarPopup = document.getElementById('calendar-popup');
     const calendarGrid = document.getElementById('calendar-grid');
+    // MODIFICATION: New chart-related element selectors
+    const chartMetricSelect = document.getElementById('chart-metric-select');
+    const chartExerciseSelectContainer = document.getElementById('chart-exercise-select-container');
+    const chartExerciseSelect = document.getElementById('chart-exercise-select');
 
     function showToast(message, type = 'info', duration = 3000) {
         const container = document.getElementById('toast-container');
@@ -182,7 +197,7 @@
     }
 
     function displayPR() {
-        const selectedExercise = exerciseSelect.value;
+        const selectedExercise = prExerciseSelect.value;
         if (!selectedExercise) {
             resultArea.innerHTML = '<p class="pr-prompt">Select an exercise to see your all-time personal record.</p>';
         } else {
@@ -194,7 +209,6 @@
                 resultArea.innerHTML = `<p class="pr-prompt">No PR found for this exercise.</p>`;
             }
         }
-        renderProgressCharts();
     }
 
     function openHistoryModal(workoutId) {
@@ -239,11 +253,11 @@
         });
     }
 
+    // MODIFICATION: Chart rendering is now self-contained
     function renderProgressCharts() {
         const ctx = document.getElementById('progress-chart').getContext('2d');
-        const chartMetric = document.getElementById('chart-metric-select').value;
-        const selectedExercise = document.getElementById('exercise-select').value;
-
+        const chartMetric = chartMetricSelect.value;
+        
         if (progressChart) {
             progressChart.destroy();
         }
@@ -251,6 +265,7 @@
         let chartConfig;
 
         if (chartMetric === 'volume') {
+            chartExerciseSelectContainer.style.display = 'none';
             const volumeByWeek = userHistory.reduce((acc, workout) => {
                 const workoutDate = new Date(workout.date);
                 const year = workoutDate.getFullYear();
@@ -293,12 +308,15 @@
             };
 
         } else { // chartMetric === '1rm'
+            chartExerciseSelectContainer.style.display = 'block';
+            const selectedExercise = chartExerciseSelect.value;
+
             if (!selectedExercise) {
                 ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
                 ctx.font = "16px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
                 ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
                 ctx.textAlign = 'center';
-                ctx.fillText('Select an exercise from the PR Finder to see 1RM progress.', ctx.canvas.width / 2, 50);
+                ctx.fillText('Select an exercise to see 1RM progress.', ctx.canvas.width / 2, 50);
                 return;
             }
 
@@ -414,12 +432,14 @@
         document.getElementById('total-volume').textContent = totalVolume.toLocaleString();
         document.getElementById('total-sets').textContent = totalSets;
 
-        exerciseSelect.innerHTML = '<option value="">-- Choose an exercise --</option>';
-        Array.from(exerciseSet).sort().forEach(exName => {
-            exerciseSelect.innerHTML += `<option value="${exName}">${exName}</option>`;
-        });
+        const exerciseOptionsHTML = '<option value="">-- Choose an exercise --</option>' + 
+            Array.from(exerciseSet).sort().map(exName => `<option value="${exName}">${exName}</option>`).join('');
+        
+        prExerciseSelect.innerHTML = exerciseOptionsHTML;
+        chartExerciseSelect.innerHTML = exerciseOptionsHTML;
         
         displayPR();
+        renderProgressCharts(); // Initial chart render
         populateHistoryCarousel();
     }
 
@@ -447,15 +467,16 @@
         const workoutId = e.currentTarget.dataset.workoutId;
         if (workoutId) deleteWorkoutFromHistory(workoutId);
     });
-    exerciseSelect.addEventListener('change', displayPR);
-    document.getElementById('chart-metric-select').addEventListener('change', renderProgressCharts);
+    prExerciseSelect.addEventListener('change', displayPR);
+    // MODIFICATION: Event listeners for the new chart controls
+    chartMetricSelect.addEventListener('change', renderProgressCharts);
+    chartExerciseSelect.addEventListener('change', renderProgressCharts);
     
-    // MODIFICATION: Robust, scroll-aware positioning logic for the calendar
     chooseDateBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         const isActive = calendarPopup.classList.toggle('active');
         if (isActive) {
-            renderMiniCalendar(); // Render first to get its dimensions
+            renderMiniCalendar(); 
 
             const btn = e.currentTarget;
             const popup = calendarPopup;
@@ -466,25 +487,14 @@
             const btnTopInContainer = btn.offsetTop;
             const btnLeftInContainer = btn.offsetLeft;
             const btnWidth = btn.offsetWidth;
-            const containerWidth = container.clientWidth; // Use clientWidth to exclude padding
+            const containerWidth = container.clientWidth;
 
-            // Set vertical position to be above the button
             popup.style.top = `${btnTopInContainer - popupHeight - 5}px`;
-
-            // Calculate horizontal position to align right edges
             let leftPos = (btnLeftInContainer + btnWidth) - popupWidth;
-
-            // Boundary check for left side
-            if (leftPos < 0) {
-                leftPos = 0;
-            }
-            // Boundary check for right side
-            if (leftPos + popupWidth > containerWidth) {
-                leftPos = containerWidth - popupWidth;
-            }
-
+            if (leftPos < 0) leftPos = 0;
+            if (leftPos + popupWidth > containerWidth) leftPos = containerWidth - popupWidth;
             popup.style.left = `${leftPos}px`;
-            popup.style.right = 'auto'; // Unset right to avoid conflicts
+            popup.style.right = 'auto';
         }
     });
 
