@@ -56,8 +56,8 @@
 
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                 <h2>All Workouts</h2>
-                <!-- MODIFICATION: Added matt-style-btn class and removed conflicting inline styles -->
-                <a href="edit-workouts.html" id="edit-workouts-link" class="action-btn matt-style-btn" style="width: auto; margin-top: 0;">Manage Plan</a>
+                <!-- MODIFICATION: Updated button style -->
+                <a href="edit-workouts.html" id="edit-workouts-link" class="action-btn btn-style-90 matt-black-bkg" style="width: auto; padding: 8px 16px;"><span class="btn-text">Manage Plan</span></a>
             </div>
             <button id="workout-select-btn" class="glass-card">
                 <span id="workout-select-text">Select a Specific Workout</span>
@@ -443,9 +443,13 @@
         }).join('');
         workoutSessionBody.innerHTML = exercisesHTML;
 
+        // MODIFICATION: Updated Finish Workout button style
         const finishBtn = document.createElement('button');
         finishBtn.id = 'finish-workout-btn';
-        finishBtn.className = 'action-btn';
+        finishBtn.className = 'action-btn btn-style-90';
+        finishBtn.style.backgroundColor = 'var(--system-blue-muted)';
+        finishBtn.style.color = 'var(--text-on-action)';
+        finishBtn.style.width = '100%';
         finishBtn.innerHTML = `<span class="btn-text">Finish Workout</span><div class="loader"></div>`;
         workoutSessionFooter.appendChild(finishBtn);
 
