@@ -9,6 +9,8 @@
     --system-blue: #0A84FF;
     --system-red: #FF3B30;
     --system-green: #30D158;
+    /* MODIFICATION: Added new muted blue color */
+    --system-blue-muted: #094C90;
 }
 
 @keyframes gradient-animation { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
@@ -92,32 +94,39 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-t
 
 .action-btn { display: block; width: 100%; text-align: center; border: none; padding: 14px 20px; border-radius: 14px; cursor: pointer; font-size: 1.1rem; font-weight: 600; margin-top: 10px; box-sizing: border-box; transition: transform 0.1s ease-out, background-color 0.2s; text-decoration: none; position: relative; }
 .action-btn:active { transform: scale(0.98); }
-.destructive-btn { background-color: var(--system-red); color: var(--text-on-action); }
-
-/* MODIFICATION: Style for Sign Out button, resembling button 41 (red gradient) */
-#sign-out-btn.destructive-btn {
-    background-image: linear-gradient(to right, var(--system-red), #c22a22);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-}
-
-/* MODIFICATION: Matt style button, resembling button 90 */
-.matt-style-btn {
-    background-color: rgba(25, 25, 25, 0.85) !important;
-    color: var(--text-primary) !important;
-    border-radius: 25px !important;
-    border: 1px solid rgba(255, 255, 255, 0.2) !important;
-    padding: 12px 22px !important;
-    font-weight: 600 !important;
-}
-.matt-style-btn:hover {
-    background-color: rgba(40, 40, 40, 0.9) !important;
-}
-
+/* MODIFICATION: Changed to gradient style */
+.destructive-btn { background: linear-gradient(135deg, #FF3B30, #c22d26); color: var(--text-on-action); }
 
 #workout-select-btn, #edit-workouts-link { transition: transform 0.1s ease-out, background-color 0.2s; }
 #workout-select-btn:hover, #edit-workouts-link:hover { background-color: rgba(50, 50, 50, 0.7); }
 #workout-select-btn:active, #edit-workouts-link:active { transform: scale(0.98); background-color: rgba(70, 70, 70, 0.8); }
+
+/* MODIFICATION: New button styles */
+.btn-style-90 {
+    border-radius: 25px;
+    transform: skewX(-3deg);
+    transition: all 0.2s ease-out;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    margin-top: 0;
+}
+.btn-style-90 .btn-text, .btn-style-90 > span {
+    display: inline-block;
+    transform: skewX(3deg);
+}
+.btn-style-90:hover {
+    transform: skewX(-3deg) scale(1.03);
+}
+.btn-style-90:active {
+    transform: skewX(-3deg) scale(0.98) !important;
+}
+.matt-black-bkg {
+    background-color: rgba(45, 45, 45, 0.9);
+    color: var(--text-primary);
+}
+.matt-black-bkg:hover {
+    background-color: rgba(60, 60, 60, 0.95);
+}
+
 
 #workout-area.fading { opacity: 0; transition: opacity 0.15s; }
 .exercise { margin-bottom: 20px; padding: 15px; animation: fade-in 0.5s; }
@@ -259,15 +268,6 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-t
     display: grid;
     gap: 10px;
 }
-/* MODIFICATION: Style for Finish Workout button */
-#finish-workout-btn {
-    grid-column: 1 / -1; /* Make it span the full width */
-    background-color: #054280; /* Averaged color */
-    color: var(--text-on-action);
-    border-radius: 25px; /* Matt style */
-    border: 1px solid rgba(255, 255, 255, 0.2); /* Matt style */
-}
-
 /* Ongoing Workout Banner */
 .ongoing-workout-banner {
     display: none; /* Hidden by default */
