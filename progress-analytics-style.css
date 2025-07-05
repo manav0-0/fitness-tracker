@@ -65,6 +65,19 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-b
 .page-header { display: flex; justify-content: space-between; align-items: center; }
 #user-photo { width: 40px; height: 40px; border-radius: 50%; }
 
+/* MODIFICATION: Matt style button, resembling button 90 */
+.matt-style-btn {
+    background-color: rgba(25, 25, 25, 0.85) !important;
+    color: var(--text-primary) !important;
+    border-radius: 25px !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    padding: 12px 22px !important;
+    font-weight: 600 !important;
+}
+.matt-style-btn:hover {
+    background-color: rgba(40, 40, 40, 0.9) !important;
+}
+
 .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; }
 .stat-card { padding: 20px; text-align: center; }
 .stat-value { font-size: 2.5rem; font-weight: 700; color: var(--system-blue); }
@@ -125,11 +138,9 @@ h2 { font-size: 1.2rem; font-weight: 600; color: var(--text-secondary); margin-b
 .management-link-content p { margin: 0; color: var(--text-secondary); }
 .management-link-arrow { font-size: 2rem; color: var(--text-tertiary); padding-left: 15px; }
 
+/* MODIFICATION: Removed conflicting styles */
 #choose-date-btn {
-    padding: 8px 16px;
     margin-top: 0;
-    background-color: rgba(45, 45, 45, 0.9);
-    color: var(--text-primary);
 }
 
 #calendar-popup {
